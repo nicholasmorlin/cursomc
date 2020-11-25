@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.nicholasmorlin.cursomc.domain.Categoria;
 import com.nicholasmorlin.cursomc.repositories.CategoriaRepository;
+import com.nicholasmorlin.cursomc.services.exceptions.DataIntegrityException;
 import com.nicholasmorlin.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -29,5 +30,15 @@ public class CategoriaService {
 	public Categoria update(Categoria obj) {
 		find(obj.getId());
 		return repo.save(obj);
+	}
+	
+	public void delete(Integer id) {
+		find(id);
+		try {
+		repo.deleteById(id);
+		}
+		catch (org.springframework.dao.DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
+		}
 	}
 }
